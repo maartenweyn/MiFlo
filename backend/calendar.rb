@@ -83,7 +83,7 @@ def get_calendar_items( service, calendar_id )
     if ( start < (DateTime.now + (24*60).minutes) ) && ( start > DateTime.now ) 
       STDERR.puts "- #{event.summary} (#{start.hour} #{start.minute})"
       task, message = parse_event( event.summary )
-      event = { "hour" => start.hour, "minute" => start.minute, "second" => start.second, "task" => task }
+      event = { 'hour' => start.hour, 'minute' => start.minute, 'second' => start.second, 'task' => task }
       events.push(event)
     end
   end
@@ -92,5 +92,5 @@ end
 
 STDERR.puts "Upcoming events for #{options.person}:"
 events = get_calendar_items( service, options.calendar )
-json = { "type" => "events", "events" => events }.to_json
+json = { 'type' => 'events', 'events' => events }.to_json
 send_mqtt( "/iot/miflo/#{options.person}/timer", json )
