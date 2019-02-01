@@ -8,6 +8,7 @@
 #include <GD2.h>
 
 #include "m_cool.h"
+#include "all.h"
 
 // notes in the melody:
 int melody[] = {
@@ -382,7 +383,8 @@ void setup() {
   pinMode( 15, OUTPUT );
 
   Serial.println("Starting gameduino ...");
-  GD.begin(0);
+  GD.begin(GD_STORAGE);
+  //GD.begin();
   GD.play( MUTE );
   GD.cmd_setrotate(0);
   GD.cmd_regwrite(REG_VOL_PB, 255);

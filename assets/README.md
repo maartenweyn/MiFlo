@@ -7,7 +7,7 @@ In deze readme staan de instructies voor linux/mac.
 
 ## Conversie van de afbeeldingen
 
-Via het `convert` pakket. Bijvoorbeeld te installeren via apt (linux) of [brew](https://brew.sh/index_nl) (mac).
+Via het `convert` pakket van `ImageMagick`. Bijvoorbeeld te installeren via apt (linux) of [brew](https://brew.sh/index_nl) (mac).
 
 Zie [convert.sh](convert.sh) voor een bash script.
 
@@ -21,6 +21,8 @@ de [gameduino2 library](https://github.com/jamesbowman/gd2-lib) heeft de nodige 
 sudo easy_install -U gameduino2
 ``` 
 
+of de asset converter via [https://github.com/jamesbowman/gd2-asset](https://github.com/jamesbowman/gd2-asset)
+
 ### generate headers with following code
 
 ```
@@ -30,3 +32,7 @@ gd3asset -3 -f flo.gd2 -o flo.h f_dduim.wav f_wauw.wav f_bol.wav f_uitst.wav f_g
 gd3asset -3 -f genflo.gd2 -o genflo.h f_dduim.wav f_wauw.wav f_bol.wav f_uitst.wav f_go.wav f_komaan.wav g_cool.wav g_formid.wav g_machti.wav g_stieva.wav g_woew.wav g_dduim2.wav g_goed.wav g_muppet.wav g_super.wav g_woop.wav g_allez.wav g_demax.wav g_goedzo.wav g_prima.wav g_tsjing.wav g_zogoed.wav g_bol.wav g_fantas.wav g_hopla.wav g_scool.wav g_wiii.wav
 gd3asset -3 -f genminne.gd2 -o genminne.h g_cool.wav g_formid.wav g_machti.wav g_stieva.wav g_woew.wav g_dduim2.wav g_goed.wav g_muppet.wav g_super.wav g_woop.wav g_allez.wav g_demax.wav g_goedzo.wav g_prima.wav g_tsjing.wav g_zogoed.wav g_bol.wav g_fantas.wav g_hopla.wav g_scool.wav g_wiii.wav m_flink3.wav m_super.wav m_gewel.wav m_flink.wav m_goed.wav m_flink2.wav m_spinne.wav
 ```
+
+
+### sd-card
+Je kan de 'selftest' app van de gameduino voorbeelden gebruiken of de sd-card werkt.
