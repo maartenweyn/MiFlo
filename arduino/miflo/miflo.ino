@@ -84,6 +84,8 @@ bool todo_done[ 4 ] = { false, false, false, false };
 
 char current_job_string[200] = "";
 
+void jingle( int );
+
 char* string2char(String s) {
   if (s.length() != 0) {
     char *p = const_cast<char*>(s.c_str());
@@ -141,25 +143,24 @@ void playmelody() {
   }
 }
 
-//int samplebases[26] = {F_DDUIM, F_WAUW, F_BOL, F_UITST, F_GO, F_KOMAAN, G_COOL, G_FORMID, G_MACHTI, G_STIEVA, G_WOEW, G_DDUIM2, G_GOED, G_SUPER, G_WOOP, G_ALLEZ, G_DEMAX, G_GOEDZO, G_PRIMA, G_TSJING, G_ZOGOED, G_BOL, G_FANTAS, G_HOPLA, G_SCOOL, G_WIII};
-//int samplefreqs[26] = {F_DDUIM_FREQ, F_WAUW_FREQ, F_BOL_FREQ, F_UITST_FREQ, F_GO_FREQ, F_KOMAAN_FREQ, G_COOL_FREQ, G_FORMID_FREQ, G_MACHTI_FREQ, G_STIEVA_FREQ, G_WOEW_FREQ, G_DDUIM2_FREQ, G_GOED_FREQ, G_SUPER_FREQ, G_WOOP_FREQ, G_ALLEZ_FREQ, G_DEMAX_FREQ, G_GOEDZO_FREQ, G_PRIMA_FREQ, G_TSJING_FREQ, G_ZOGOED_FREQ, G_BOL_FREQ, G_FANTAS_FREQ, G_HOPLA_FREQ, G_SCOOL_FREQ, G_WIII_FREQ};
-//int samplelengths[26] = {F_DDUIM_LENGTH, F_WAUW_LENGTH, F_BOL_LENGTH, F_UITST_LENGTH, F_GO_LENGTH, F_KOMAAN_LENGTH, G_COOL_LENGTH, G_FORMID_LENGTH, G_MACHTI_LENGTH, G_STIEVA_LENGTH, G_WOEW_LENGTH, G_DDUIM2_LENGTH, G_GOED_LENGTH, G_SUPER_LENGTH, G_WOOP_LENGTH, G_ALLEZ_LENGTH, G_DEMAX_LENGTH, G_GOEDZO_LENGTH, G_PRIMA_LENGTH, G_TSJING_LENGTH, G_ZOGOED_LENGTH, G_BOL_LENGTH, G_FANTAS_LENGTH, G_HOPLA_LENGTH, G_SCOOL_LENGTH, G_WIII_LENGTH};
-int samplebases[20] = {G_COOL, G_FORMID, G_MACHTI, G_STIEVA, G_WOEW, G_DDUIM2, G_GOED, G_SUPER, G_WOOP, G_ALLEZ, G_DEMAX, G_GOEDZO, G_PRIMA, G_TSJING, G_ZOGOED, G_BOL, G_FANTAS, G_HOPLA, G_SCOOL, G_WIII};
-int samplefreqs[20] = {G_COOL_FREQ, G_FORMID_FREQ, G_MACHTI_FREQ, G_STIEVA_FREQ, G_WOEW_FREQ, G_DDUIM2_FREQ, G_GOED_FREQ, G_SUPER_FREQ, G_WOOP_FREQ, G_ALLEZ_FREQ, G_DEMAX_FREQ, G_GOEDZO_FREQ, G_PRIMA_FREQ, G_TSJING_FREQ, G_ZOGOED_FREQ, G_BOL_FREQ, G_FANTAS_FREQ, G_HOPLA_FREQ, G_SCOOL_FREQ, G_WIII_FREQ};
-int samplelengths[20] = {G_COOL_LENGTH, G_FORMID_LENGTH, G_MACHTI_LENGTH, G_STIEVA_LENGTH, G_WOEW_LENGTH, G_DDUIM2_LENGTH, G_GOED_LENGTH, G_SUPER_LENGTH, G_WOOP_LENGTH, G_ALLEZ_LENGTH, G_DEMAX_LENGTH, G_GOEDZO_LENGTH, G_PRIMA_LENGTH, G_TSJING_LENGTH, G_ZOGOED_LENGTH, G_BOL_LENGTH, G_FANTAS_LENGTH, G_HOPLA_LENGTH, G_SCOOL_LENGTH, G_WIII_LENGTH};
+//int samplebases[20] = {G_COOL, G_FORMID, G_MACHTI, G_STIEVA, G_WOEW, G_DDUIM2, G_GOED, G_SUPER, G_WOOP, G_ALLEZ, G_DEMAX, G_GOEDZO, G_PRIMA, G_TSJING, G_ZOGOED, G_BOL, G_FANTAS, G_HOPLA, G_SCOOL, G_WIII};
+//int samplefreqs[20] = {G_COOL_FREQ, G_FORMID_FREQ, G_MACHTI_FREQ, G_STIEVA_FREQ, G_WOEW_FREQ, G_DDUIM2_FREQ, G_GOED_FREQ, G_SUPER_FREQ, G_WOOP_FREQ, G_ALLEZ_FREQ, G_DEMAX_FREQ, G_GOEDZO_FREQ, G_PRIMA_FREQ, G_TSJING_FREQ, G_ZOGOED_FREQ, G_BOL_FREQ, G_FANTAS_FREQ, G_HOPLA_FREQ, G_SCOOL_FREQ, G_WIII_FREQ};
+//int samplelengths[20] = {G_COOL_LENGTH, G_FORMID_LENGTH, G_MACHTI_LENGTH, G_STIEVA_LENGTH, G_WOEW_LENGTH, G_DDUIM2_LENGTH, G_GOED_LENGTH, G_SUPER_LENGTH, G_WOOP_LENGTH, G_ALLEZ_LENGTH, G_DEMAX_LENGTH, G_GOEDZO_LENGTH, G_PRIMA_LENGTH, G_TSJING_LENGTH, G_ZOGOED_LENGTH, G_BOL_LENGTH, G_FANTAS_LENGTH, G_HOPLA_LENGTH, G_SCOOL_LENGTH, G_WIII_LENGTH};
 
 void sample() {
-  digitalWrite(15, HIGH);
-  GD.play(UNMUTE);
-  uint32_t base, len, freq;
-  int i = rand() % 20;
-  base = samplebases[i];
-  len = samplelengths[i];
-  freq = samplefreqs[i];
-  GD.sample(base, len, freq, ADPCM_SAMPLES);
-  delay(2000 * len / freq);
-  GD.play(MUTE);
-  digitalWrite(15, LOW);
+  jingle(0);
+  
+//  digitalWrite(15, HIGH);
+//  GD.play(UNMUTE);
+//  uint32_t base, len, freq;
+//  int i = rand() % 20;
+//  base = samplebases[i];
+//  len = samplelengths[i];
+//  freq = samplefreqs[i];
+//  GD.sample(base, len, freq, ADPCM_SAMPLES);
+//  delay(2000 * len / freq);
+//  GD.play(MUTE);
+//  digitalWrite(15, LOW);
 }
 
 void jingle( int n = 0 ) {
@@ -216,11 +217,11 @@ void parse_command( char* json ) {
     add_log("Caching events");
     cache.clear();
     for ( int i = 0; i < root["events"].size(); i++ ) {
-      int hour = root["events"][i]["hour"];
-      int minute = root["events"][i]["minute"];
-      int second = root["events"][i]["second"];
-      int time = hour * 10000 + minute * 100 + second;
-      const char* task = root["events"][i]["task"];
+      int hour = root["events"][i]["h"];
+      int minute = root["events"][i]["m"];
+      //int second = root["events"][i]["seco"];
+      int time = hour * 10000 + minute;// * 100 + second;
+      const char* task = root["events"][i]["t"];
       cache[ time ] = task;
     }
   } else if ( strcmp( type, "log" ) == 0 ) {
@@ -384,10 +385,7 @@ void setup() {
 
   Serial.println("Starting gameduino ...");
   GD.begin(GD_STORAGE);
-<<<<<<< HEAD
   //GD.begin();
-=======
->>>>>>> ed9bbd4691cb2fb18bfe4d732e82b9d202614801
   GD.play( MUTE );
   GD.cmd_setrotate(0);
   GD.cmd_regwrite(REG_VOL_PB, 255);
@@ -396,11 +394,11 @@ void setup() {
   add_log("Gameduino started");
 
   add_log("Loading sounds ...");
-  LOAD_ASSETS();
+  //LOAD_ASSETS();
   add_log("Sounds loaded");
 
   add_log("Loading JPGs ...");
-  load_jpgs();
+  //load_jpgs();
   add_log("JPGs loaded");
 
   WiFi.begin( ssid, password );

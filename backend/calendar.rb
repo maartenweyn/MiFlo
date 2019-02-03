@@ -92,5 +92,7 @@ end
 
 STDERR.puts "Upcoming events for #{options.person}:"
 events = get_calendar_items( service, options.calendar )
+STDERR.puts events
 json = { 'type' => 'events', 'events' => events }.to_json
+STDERR.puts json
 send_mqtt( "/iot/miflo/#{options.person}/timer", json )
