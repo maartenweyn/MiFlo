@@ -2,12 +2,21 @@ import paho.mqtt.client as paho
 import time
 import sys
 import re
+import telegram
+from telegram.error import NetworkError, Unauthorized
+import logging
 
 
 broker="192.168.0.10"
 topic_commands="/iot/miflo/mattijs/timer"
 topic_status="/iot/miflo/mattijs/status"
 client= paho.Client("milfo_broker")
+telegram_token = "730849132:AAEEGCrkj0YSKIFJTquZJzQAaYNrWEyj1PY"
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+
+
+update_id = None
 
 def send_time():
   year = time.strftime("%Y", time.localtime())
@@ -44,23 +53,23 @@ def parse_command( message ):
   elif (re.match(r'[tT]imer (\d+)', message)):
     values = re.findall(r'[tT]imer (\d+)', message)[0]
     return "{{'type':'timetimer', 'minutes':{}, 'job':''}}".format(values[0]), "Sending instructions to start a time-timer"
-  elif (re.match(r'[tT]odo ([a-z]+) ([a-z]+) ([a-z]+) ([a-z]+)', message)):
-    values = re.findall(r'[tT]odo ([a-z]+) ([a-z]+) ([a-z]+) ([a-z]+)', message)[0]
+  elif (re.match(r'[tT]odo ([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+)', message)):
+    values = re.findall(r'[tT]odo ([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+)', message)[0]
     return "{{'type':'todo', 'job':['{}','{}','{}','{}']}}".format(values[0], values[1], values[2], values[3]), "Sending instructions for a todo list"
-  elif (re.match(r'[tT]odo ([a-z]+) ([a-z]+) ([a-z]+)', message)):
-    values = re.findall(r'[tT]odo ([a-z]+) ([a-z]+) ([a-z]+)', message)[0]
+  elif (re.match(r'[tT]odo ([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+)', message)):
+    values = re.findall(r'[tT]odo ([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+)', message)[0]
     return "{{'type':'todo', 'job':['{}','{}','{}','']}}".format(values[0], values[1], values[2]), "Sending instructions for a todo list"
-  elif (re.match(r'[tT]odo ([a-z]+) ([a-z]+)', message)):
-    values = re.findall(r'[tT]odo ([a-z]+) ([a-z]+)', message)[0]
-    return "{{'type':'todo', 'job':['{}','{}','','']}}".format(values[0], values[1]), "Sending instructions for a todo list"
-  elif (re.match(r'[tT]odo ([a-z]+)', message)):
-    values = re.findall(r'[tT]odo ([a-z]+)', message)[0]
+  elif (re.match(r'[tT]odo ([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+)', message)):
+    values = re.findall(r'[tT]odo ([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+)', message)[0]
+    return "{{'type':'todo', 'job':['{}','{}','','']}}".format(values[0], values[1]), "fdfsSending instructions for a todo list"
+  elif (re.match(r'[tT]odo ([a-zA-Z0-9_]+)', message)):
+    values = re.findall(r'[tT]odo ([a-zA-Z0-9_]+)', message)
     return "{{'type':'todo', 'job':['{}','','','']}}".format(values[0]), "Sending instructions for a todo list"
   elif (re.match(r'[rR]eminder (.+)', message)):
-    values = re.findall(r'[rR]eminder (.+)', message)[0]
+    values = re.findall(r'[rR]eminder (.+)', message)
     return "{{'type':'reminder', 'message': '{}'}}".format(values[0]), "Reminder verstuurd"
   elif (re.match(r'[aA]larm (.+)', message)):
-    values = re.findall(r'[aA]larm (.+)', message)[0]
+    values = re.findall(r'[aA]larm (.+)', message)
     return "{{'type':'alarm', 'message': '{}'}}".format(values[0]), "Alarm verstuurd"
   elif (re.match(r'[pP]luspunt', message)):
     return "{'type':'plus'}", "Pluspunt"
@@ -71,19 +80,62 @@ def parse_command( message ):
   else:
     return "", "Ik heb je commando niet goed begrepen"
 
+def query_telegram(bot):
+  global update_id
+  logging.debug ("query_telegram")
+  for update in bot.get_updates(offset=update_id, timeout=10):
+        update_id = update.update_id + 1
+
+        if update.message:  # your bot can receive updates without messages
+            logging.debug  ("incomming telegram %s", update.message.text)
+            
+            if (re.match(r'[mM]attijs (.+)', update.message.text)):
+              values = re.findall(r'[mM]attijs (.+)', update.message.text)[0]
+              json, bot_message = parse_command(values)
+
+              logging.debug(json)
+              logging.debug(bot_message)
+
+              if json != "":
+                ret = client.publish( "/iot/miflo/mattijs/timer", json )
+                logging.debug("Sending %s to mqtt: %s", json, ret)
+
+              if bot_message != "":
+                update.message.reply_text(bot_message)
+            else:
+              update.message.reply_text("Die naam ken ik niet ... Gebruik bijvoorbeeld 'minne timer 15'")
+
+
 def main(argv): 
+  global update_id
+
+  bot = telegram.Bot(telegram_token)
+  # get the first pending update_id, this is so we can skip over it in case
+  # we get an "Unauthorized" exception.
+  try:
+      update_id = bot.get_updates()[0].update_id
+  except IndexError:
+      update_id = None
+
+
   ######Bind function to callback
   client.on_message=on_message
   #####
-  print("connecting to broker ", broker)
+  logging.info("connecting to broker %s", broker)
   client.connect(broker)#connect
   client.loop_start() #start loop to process received messages
-  print("subscribing ")
+  logging.debug("subscribing ")
   client.subscribe(topic_status)#subscribe
 
   while(1):
-    time.sleep(2)
-  
+    try:
+      query_telegram(bot)
+    except NetworkError:
+      time.sleep(1)
+    except Unauthorized:
+      logging.warning("Telegram Unauthorized")
+       # The user has removed or blocked the bot.
+      update_id += 1
 
   client.disconnect() #disconnect
   client.loop_stop() #stop loop
