@@ -7,12 +7,17 @@ from telegram.error import NetworkError, Unauthorized
 import logging
 
 
-broker="192.168.0.10"
-topic_commands="/iot/miflo/mattijs/timer"
-topic_status="/iot/miflo/mattijs/status"
-client= paho.Client("milfo_broker")
-telegram_token = "730849132:AAEEGCrkj0YSKIFJTquZJzQAaYNrWEyj1PY"
+import config
+# in config.py:
+#MIFLO_CONFIG = {
+#    'broker': '0.0.0.0',
+#    'topic_commands': '',
+#    'topic_status': '',
+#    'telegram_token': ''
+#}
 
+
+client= paho.Client("milfo_broker")
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
 
@@ -29,7 +34,7 @@ def send_time():
   json = "{{'type':'settime', 'year':{}, 'month':'{}', 'day':'{}', 'hour':{}, 'minute':'{}', 'second':'{}'}}".format(year, month, day, hour, min, sec)
   print(json)
 
-  client.publish(topic_commands,json)#publish
+  client.publish(config.MIFLO_CONFIG['topic_commands'],json)#publish
 
 def on_message(client, userdata, message):
     time.sleep(1)
@@ -109,7 +114,7 @@ def query_telegram(bot):
 def main(argv): 
   global update_id
 
-  bot = telegram.Bot(telegram_token)
+  bot = telegram.Bot(config.MIFLO_CONFIG['telegram_token'])
   # get the first pending update_id, this is so we can skip over it in case
   # we get an "Unauthorized" exception.
   try:
@@ -121,11 +126,11 @@ def main(argv):
   ######Bind function to callback
   client.on_message=on_message
   #####
-  logging.info("connecting to broker %s", broker)
-  client.connect(broker)#connect
+  logging.info("connecting to broker %s", config.MIFLO_CONFIG['broker'])
+  client.connect(config.MIFLO_CONFIG['broker'])#connect
   client.loop_start() #start loop to process received messages
   logging.debug("subscribing ")
-  client.subscribe(topic_status)#subscribe
+  client.subscribe(config.MIFLO_CONFIG['topic_status'])#subscribe
 
   while(1):
     try:

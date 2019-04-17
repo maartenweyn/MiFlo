@@ -1,3 +1,4 @@
 .DS_Store
 arduino/miflo/settings.h
 settings.h
+backend/config.py
